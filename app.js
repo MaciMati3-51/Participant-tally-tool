@@ -53,6 +53,13 @@ function isoNow() {
          `T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}${tz}`;
 }
 
+// ---- ファイル名用タイムスタンプ (YYYYMMDD_HHMM) ----
+function fileTimestamp() {
+  const d = new Date();
+  const p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`;
+}
+
 // ---- HTML エスケープ ----
 function esc(s) {
   return String(s)
@@ -413,11 +420,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---- ダウンロード ----
   document.getElementById('dl-master').addEventListener('click', () => {
     if (!result) return;
-    downloadCSV('master_counts.csv', buildMasterCSV(result.masterRows));
+    downloadCSV(`master_counts_${fileTimestamp()}.csv`, buildMasterCSV(result.masterRows));
   });
 
   document.getElementById('dl-summary').addEventListener('click', () => {
     if (!result) return;
-    downloadCSV('summary.csv', buildSummaryCSV(result));
+    downloadCSV(`summary_${fileTimestamp()}.csv`, buildSummaryCSV(result));
   });
 });
