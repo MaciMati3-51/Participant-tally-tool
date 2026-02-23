@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>参加者 CSV 集計ツール</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>参加者 CSV 集計ツール</h1>
+    <p>複数イベントの CSV をブラウザで集計 &mdash; データはサーバに送信されません</p>
+  </header>
+
+  <main>
+
+    <!-- ① ファイル投入 -->
+    <section class="card">
+      <h2><span class="step">1</span>CSV ファイルの投入</h2>
+
+      <div id="drop-zone" class="drop-zone">
+        <div class="drop-icon">&#128193;</div>
+        <p class="drop-main">ここに CSV ファイルをドラッグ &amp; ドロップ</p>
+        <p class="drop-or">または</p>
+        <button id="file-select-btn" class="btn btn-outline">ファイルを選択</button>
+        <input type="file" id="file-input" multiple accept=".csv" hidden>
+      </div>
+
+      <div id="file-list" class="file-list"></div>
+    </section>
+
+    <!-- ② 設定 -->
+    <section class="card">
+      <h2><span class="step">2</span>集計設定</h2>
+
+      <div class="settings-grid">
+
+        <div class="setting-item">
+          <label for="header-row">ヘッダー行番号</label>
+          <input type="number" id="header-row" value="1" min="1" max="99" class="input-narrow">
+          <span class="hint">データはヘッダー行の次の行から読み込みます（デフォルト: 1）</span>
+        </div>
+
+        <div class="setting-item">
+          <label for="primary-key-col">主キー列 <span class="req">*</span></label>
+          <input type="text" id="primary-key-col" placeholder="例: A" maxlength="4"
+                 autocomplete="off" spellcheck="false" class="input-col">
+        </div>
+
+        <div class="setting-item">
+          <label for="name-col">名前列 <span class="req">*</span></label>
+          <input type="text" id="name-col" placeholder="例: B" maxlength="4"
+                 autocomplete="off" spellcheck="false" class="input-col">
+        </div>
+
+        <div class="setting-item">
+          <label for="status-col">ステータス列 <span class="req">*</span></label>
+          <input type="text" id="status-col" placeholder="例: F" maxlength="4"
+                 autocomplete="off" spellcheck="false" class="input-col">
+        </div>
+
+        <div class="setting-item">
+          <label for="condition-str">参加扱い条件文字列 <span class="req">*</span></label>
+          <input type="text" id="condition-str" placeholder="例: approved"
+                 autocomplete="off" spellcheck="false">
+          <span class="hint">大文字小文字・前後の空白を無視して比較します</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 実行ボタン -->
+    <div class="run-row">
+      <button id="run-btn" class="btn btn-primary btn-run" disabled>集計する</button>
+    </div>
+
+    <!-- ③ 結果 -->
+    <section class="card" id="results-section" hidden>
+      <h2><span class="step">3</span>集計結果</h2>
+
+      <div class="summary-grid">
+        <div class="stat-card stat-blue">
+          <span class="stat-label">処理ファイル数</span>
+          <span class="stat-value" id="res-processed-files">&mdash;</span>
+        </div>
+        <div class="stat-card stat-blue">
+          <span class="stat-label">スキップ数</span>
+          <span class="stat-value" id="res-skipped-files">&mdash;</span>
+        </div>
+        <div class="stat-card stat-blue">
+          <span class="stat-label">総申込人数</span>
+          <span class="stat-value" id="res-gross-applications">&mdash;</span>
+        </div>
+        <div class="stat-card stat-green">
+          <span class="stat-label">延べ人数</span>
+          <span class="stat-value" id="res-attended-total">&mdash;</span>
+        </div>
+        <div class="stat-card stat-green">
+          <span class="stat-label">ユニーク人数</span>
+          <span class="stat-value" id="res-attended-unique">&mdash;</span>
+        </div>
+        <div class="stat-card stat-green">
+          <span class="stat-label">実質参加割合</span>
+          <span class="stat-value" id="res-effective-rate">&mdash;</span>
+        </div>
+      </div>
+
+      <div id="skipped-warning" class="alert-box" hidden>
+        <span class="alert-icon">&#9888;</span>
+        <div>
+          <strong>以下のファイルはファイル名重複のためスキップされました</strong>
+          <ul id="skipped-file-list"></ul>
+        </div>
+      </div>
+
+      <div class="download-section">
+        <p class="download-label">ダウンロード</p>
+        <div class="download-buttons">
+          <button id="dl-master" class="btn btn-dl">
+            <span class="dl-icon">&#8659;</span> master_counts.csv
+          </button>
+          <button id="dl-summary" class="btn btn-dl">
+            <span class="dl-icon">&#8659;</span> summary.csv
+          </button>
+          <button id="dl-skipped" class="btn btn-dl">
+            <span class="dl-icon">&#8659;</span> skipped_files.csv
+          </button>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer>
+    <p>参加者 CSV 集計ツール &mdash; すべての処理はブラウザ内で完結します</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
