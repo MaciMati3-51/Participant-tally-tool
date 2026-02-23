@@ -230,6 +230,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusColInput = document.getElementById('status-col');
   const condInput      = document.getElementById('condition-str');
 
+  const DEFAULT_SETTINGS = Object.freeze({
+    headerRow: '1',
+    pkCol: 'E',
+    nameCol: 'B',
+    statusCol: 'H',
+    condition: 'approved',
+  });
+
+  // HTML の value 属性だけだとブラウザの復元値に上書きされることがあるため、
+  // 初期表示時に JS から規定値を明示的に適用する。
+  function applyDefaultSettings() {
+    headerRowInput.value = DEFAULT_SETTINGS.headerRow;
+    headerRowInput.defaultValue = DEFAULT_SETTINGS.headerRow;
+    pkColInput.value = DEFAULT_SETTINGS.pkCol;
+    pkColInput.defaultValue = DEFAULT_SETTINGS.pkCol;
+    nameColInput.value = DEFAULT_SETTINGS.nameCol;
+    nameColInput.defaultValue = DEFAULT_SETTINGS.nameCol;
+    statusColInput.value = DEFAULT_SETTINGS.statusCol;
+    statusColInput.defaultValue = DEFAULT_SETTINGS.statusCol;
+    condInput.value = DEFAULT_SETTINGS.condition;
+    condInput.defaultValue = DEFAULT_SETTINGS.condition;
+  }
+
+  applyDefaultSettings();
+
   // ---- ファイル投入 ----
   dropZone.addEventListener('dragover', e => {
     e.preventDefault();
@@ -303,6 +328,8 @@ document.addEventListener('DOMContentLoaded', () => {
                required.every(el => el.value.trim() !== '');
     runBtn.disabled = !ok;
   }
+
+  updateRunBtn();
 
   // ---- 集計実行 ----
   runBtn.addEventListener('click', async () => {
