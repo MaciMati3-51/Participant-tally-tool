@@ -436,6 +436,10 @@ main {
   font-size: 0.88rem;
 }
 
+.alert-box[hidden] {
+  display: none !important;
+}
+
 .alert-icon {
   font-size: 1.15rem;
   flex-shrink: 0;

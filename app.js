@@ -387,6 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
       list.innerHTML = dups.map(s => `<li>${esc(s.name)}</li>`).join('');
       warn.hidden = false;
     } else {
+      list.innerHTML = '';
       warn.hidden = true;
     }
 
