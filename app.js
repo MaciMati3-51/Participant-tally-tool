@@ -184,16 +184,16 @@ async function aggregate(files, cfg) {
    CSV ビルダー
    ============================================================ */
 function buildMasterCSV(rows) {
-  return buildCSV(['primary_key', 'name', 'total_count'], rows);
+  return buildCSV(['主キー', '名前', '参加回数'], rows);
 }
 
 function buildSummaryCSV(result) {
   const { processedCount, skipped, summary } = result;
   return buildCSV(
     [
-      'generated_at', 'processed_files', 'skipped_files',
-      'gross_applications_total', 'attended_total', 'attended_unique_people',
-      'effective_attendance_rate', 'ignored_rows_missing_key', 'ignored_rows_missing_name',
+      '集計日時', '処理ファイル数', 'スキップファイル数',
+      '総申込人数', '延べ人数', 'ユニーク人数',
+      '実質参加割合', '無視行_主キー欠損', '無視行_名前欠損',
     ],
     [[
       isoNow(),
@@ -207,10 +207,6 @@ function buildSummaryCSV(result) {
       summary.ignoredNoName,
     ]]
   );
-}
-
-function buildSkippedCSV(skipped) {
-  return buildCSV(['file_name', 'reason'], skipped.map(s => [s.name, s.reason]));
 }
 
 /* ============================================================
@@ -384,10 +380,5 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('dl-summary').addEventListener('click', () => {
     if (!result) return;
     downloadCSV('summary.csv', buildSummaryCSV(result));
-  });
-
-  document.getElementById('dl-skipped').addEventListener('click', () => {
-    if (!result) return;
-    downloadCSV('skipped_files.csv', buildSkippedCSV(result.skipped));
   });
 });
