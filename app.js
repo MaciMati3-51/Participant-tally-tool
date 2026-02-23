@@ -223,6 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileListEl     = document.getElementById('file-list');
   const runBtn         = document.getElementById('run-btn');
   const resultsSection = document.getElementById('results-section');
+  const skippedWarnEl  = document.getElementById('skipped-warning');
+  const skippedListEl  = document.getElementById('skipped-file-list');
 
   const headerRowInput = document.getElementById('header-row');
   const pkColInput     = document.getElementById('primary-key-col');
@@ -254,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   applyDefaultSettings();
+  setSkippedWarning([]);
 
   // ---- ファイル投入 ----
   dropZone.addEventListener('dragover', e => {
@@ -331,6 +334,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateRunBtn();
 
+  function setSkippedWarning(duplicateSkippedFiles) {
+    if (duplicateSkippedFiles.length > 0) {
+      skippedListEl.innerHTML = duplicateSkippedFiles
+        .map(s => `<li>${esc(s.name)}</li>`)
+        .join('');
+      skippedWarnEl.hidden = false;
+      skippedWarnEl.style.display = 'flex';
+      return;
+    }
+
+    skippedListEl.innerHTML = '';
+    skippedWarnEl.hidden = true;
+    skippedWarnEl.style.display = 'none';
+  }
+
   // ---- 集計実行 ----
   runBtn.addEventListener('click', async () => {
     const headerRow = Math.max(1, parseInt(headerRowInput.value) || 1);
@@ -347,6 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
     runBtn.disabled = true;
     runBtn.textContent = '集計中…';
     result = null;
+    setSkippedWarning([]);
 
     try {
       result = await aggregate(uploadedFiles, {
@@ -380,16 +399,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setText('res-effective-rate', rateDisp);
 
     // スキップ警告
-    const warn = document.getElementById('skipped-warning');
-    const list = document.getElementById('skipped-file-list');
     const dups = skipped.filter(s => s.reason === 'duplicate_filename');
-    if (dups.length > 0) {
-      list.innerHTML = dups.map(s => `<li>${esc(s.name)}</li>`).join('');
-      warn.hidden = false;
-    } else {
-      list.innerHTML = '';
-      warn.hidden = true;
-    }
+    setSkippedWarning(dups);
 
     resultsSection.hidden = false;
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
